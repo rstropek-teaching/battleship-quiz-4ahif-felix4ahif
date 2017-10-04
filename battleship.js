@@ -18,13 +18,92 @@ $(() => {
     tr.appendTo(battleground);
   }
 
-  $('#generate').click(() => {
-    // Here you have to add your code for building a random battleground.
 
-    // Tip: The next line of code demonstrates how you can select a table cell
-    // using coordinates, remove CSS classes and add CSS classes. 
-    $('td[data-r="1"][data-c="1"]').removeClass('water').addClass('ship');
-    $('td[data-r="2"][data-c="1"]').removeClass('water').addClass('ship');
-    $('td[data-r="3"][data-c="1"]').removeClass('water').addClass('ship');
+  $('#generate').click(() => {
+    //clear Field
+    for(var i=0;i<10;i++){
+      for(var j=0;j<10;j++){
+        $('td[data-r="' + i + '"][data-c="' + j + '"]').removeClass('ship').addClass('water');
+      }
+    }
+    //generate Field
+    ships = [5, 4, 3, 3, 2];
+    for (var i = 0; i < 5; i++) {
+      placeShip(ships[i]);
+    }
   });
+
+  function placeShip(size) {
+    var direction, x, y = 0;
+    do {
+      direction = Math.floor((Math.random() * 4) + 1);
+      do {
+        x = Math.floor((Math.random() * 10));
+        y = Math.floor((Math.random() * 10));
+      } while ($('td[data-r="' + x + '"][data-c="' + y + '"]').hasClass('ship'));
+    } while (defineDirection(size, direction, x, y) > 0);
+    switch (direction) {
+      case 1:
+        for (var i = 0; i < size; i++) {
+          $('td[data-r="' + x + '"][data-c="' + y + '"]').removeClass('water').addClass('ship');
+          y--;
+        } break;
+      case 2:
+        for (var i = 0; i < size; i++) {
+          $('td[data-r="' + x + '"][data-c="' + y + '"]').removeClass('water').addClass('ship');
+          x++;
+        } break;
+      case 3:
+        for (var i = 0; i < size; i++) {
+          $('td[data-r="' + x + '"][data-c="' + y + '"]').removeClass('water').addClass('ship');
+          y++;
+        } break;
+      case 4:
+        for (var i = 0; i < size; i++) {
+          $('td[data-r="' + x + '"][data-c="' + y + '"]').removeClass('water').addClass('ship');
+          x--;
+        } break;
+    }
+  }
+
+  function defineDirection(numb, direction, x, y) {    //1=left 2=down 3=right 4=up       error>0 = direction must be changed
+    error = 0;
+    switch (direction) {
+      case 1:
+        for (var i = 0; i < numb; i++) {
+          y--;
+          if ($('td[data-r="' + x + '"][data-c="' + y + '"]').hasClass('ship')) {
+            error = 1;
+          }
+        } break;
+      case 2:
+        for (var i = 0; i < numb; i++) {
+          x++;
+          if ($('td[data-r="' + x + '"][data-c="' + y + '"]').hasClass('ship')) {
+            error = 1;
+          }
+        } break;
+      case 3:
+        for (var i = 0; i < numb; i++) {
+          y++;
+          if ($('td[data-r="' + x + '"][data-c="' + y + '"]').hasClass('ship')) {
+            error = 1;
+          }
+        } break;
+      case 4:
+        for (var i = 0; i < numb; i++) {
+          x--;
+          if ($('td[data-r="' + x + '"][data-c="' + y + '"]').hasClass('ship')) {
+            error = 1;
+          }
+        } break;
+    }
+    if (error === 0) {
+      if (x < 0 || x > 10 || y < 0 || y > 10) {
+        error = 2;
+      }
+    }
+    return error;
+
+  }
 });
